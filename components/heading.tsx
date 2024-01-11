@@ -10,7 +10,7 @@ interface HeadingProps {
   bgColor?: string;
 }
 
-function Heading({
+export function Heading({
   title,
   description,
   icon: Icon,
@@ -31,5 +31,3 @@ function Heading({
     </>
   );
 }
-
-export default Heading;
