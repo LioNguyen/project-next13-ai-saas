@@ -1,21 +1,22 @@
 "use client";
 
-import * as z from "zod";
-import axios from "axios";
-import Image from "next/image";
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { Download, ImageIcon } from "lucide-react";
-import { useForm } from "react-hook-form";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "react-hot-toast";
+import * as z from "zod";
 
+import { Empty } from "@/components/empty";
 import { Heading } from "@/components/heading";
+import { Loader } from "@/components/loader";
 import { Button } from "@/components/ui/button";
 import { Card, CardFooter } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { Loader } from "@/components/loader";
-import { Empty } from "@/components/empty";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -23,10 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useProModal } from "@/hooks/use-pro-modal";
 
 import { amountOptions, formSchema, resolutionOptions } from "./constants";
 
 const PhotoPage = () => {
+  const proModal = useProModal();
   const router = useRouter();
   const [photos, setPhotos] = useState<string[]>([]);
 
@@ -51,8 +54,11 @@ const PhotoPage = () => {
 
       setPhotos(urls);
     } catch (error: any) {
-      // TODO: Open Pro Modal
-      console.log(error);
+      if (error?.response?.status === 403) {
+        proModal.onOpen();
+      } else {
+        toast.error("Something went wrong.");
+      }
     } finally {
       router.refresh();
     }
